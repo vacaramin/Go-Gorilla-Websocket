@@ -16,16 +16,31 @@ var upgrader = websocket.Upgrader{
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Homepage")
 }
+func reader(conn *websocket.Conn) {
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(p))
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
 func wsEndPoint(w http.ResponseWriter, r *http.Request) {
 	upgrader.CheckOrigin = func(r *http.Request) bool {
 		return true
 	}
-	_, err := upgrader.Upgrade(w, r, nil)
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 	}
 
 	log.Println("Client Successfully Connected ...")
+	reader(ws)
 
 }
 func setupRoutes() {
@@ -35,4 +50,5 @@ func setupRoutes() {
 
 func main() {
 	fmt.Println("Go Websocket")
+	setupRoutes()
 }
