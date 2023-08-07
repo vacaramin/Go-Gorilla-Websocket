@@ -2,9 +2,10 @@ package Routes
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -39,6 +40,6 @@ func wsEndPoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Client Successfully Connected ...")
-	reader(ws)
+	go reader(ws)
 
 }
